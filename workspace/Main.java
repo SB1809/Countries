@@ -1,3 +1,6 @@
+//Sophia Babayev
+//1/14/2025
+//Where the game is acually created with all the buttons doing different things with the Countrys class.
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -11,12 +14,15 @@ public class Main
   private Country[] countryArray = new Country[10];  
   // index of current shown country
   private int index = 0;
+  private int rand;
 
   // GUI elements
   private JFrame jFrame = new JFrame("Countries");
   private ImageIcon img;
   private JLabel imageLabel;
   private JLabel outputLabel;
+  private JTextField input;
+
   
   public static void main(String[] args) {
     // Create the GUI
@@ -25,61 +31,109 @@ public class Main
     gui.showCountry();
   }
 
-  /* loadCountries() reads in the data from the countries-data.csv file and fills in the countryArray with data. You need to add the loop that reads in the country data into the array. */
+  
+  //Postcondition: Reads in the data from the countries-data.csv file and fills in the countryArray with data.
   public void loadCountries() 
   {
     // Open the data file - do not change
-    File file = new File("countries-data.csv");
+    File file = new File("/workspaces/Countries/workspace/countries-data.csv");
     Scanner scan = null;
     try {
       scan = new Scanner(file);
     } catch(FileNotFoundException e) { 
         System.out.println("File not found");     
     }
-    
-    // Write a for loop that goes through the countryArray.
-    // for(int i ....) {
-    // Do the following inside the loop
+     
+    for(int i = 0; i < countryArray.length; i++){
       String input = scan.nextLine();
       String[] data = input.split(",");
       System.out.println("Read in " + data[0]);
-      // inside the loop, create a new Country using your constructor with 3 arguments and pass in data[0], data[1], data[2], data[3] as arguments.
-     // inside the loop, set countryArray[i] to the created Country object
+
+      Country info = new Country(data[0], data[1], data[2], data[3]);
+      countryArray[i] = info;
+      System.out.println(countryArray[i].toString());
+
+    }
      
     
   }
 
-  /* showCountry() will show the image associated with the current country. It should get the country at index from the countryArray. It should use its get method to get its image file name and use the code below to put the image in the GUI.
-  */
+  
+  //Postcondition: Will show the image associated with the current country in the GUI.
   public void showCountry() {
     // Get the country at index from countryArray
-    
+    // Get the country at variable index from the countryArray
+    Country c = countryArray[index];
+         
+     
     // Use its get method to get the its image file name and save it into imagefile variable below instead of worldmap.jpg.
     String imagefile = "worldmap.jpg";
+    imagefile = c.getImagefile();
     // Use the following code to create an new Image Icon and put it into the GUI
-    img = new ImageIcon(imagefile);
+    img = new ImageIcon("/workspaces/Countries/workspace/" + imagefile);
     imageLabel.setIcon(img);
   }
   
-  /* nextButton should increment index. If the index is greater than 9, reset it back to 0. Clear the outputLabel to empty string using setText, and call showCountry();*/
+  //Precondition: Next button muct be clicked.
+  //Postcondition: If the index is greater than 9, set it back to 0. Clear the outputLabel to empty string using setText, and call showCountry(); method. It will also randomly print 1 of the 3 questions.
   public void nextButtonClick()
   {
-    
+    index++;
+      if (index > 9){
+        index = 0;
+      }
+      rand = (int)(Math.random()*3);
+      if(rand == 0){
+      outputLabel.setText("What country is this?");
+      }
+      else if( rand == 1){
+        outputLabel.setText("Whats the capital?");
+      }else{
+      outputLabel.setText("What lanugage do they speak?");
+      }
+      showCountry();
+
   }
   
-  /* reviewButton should get the country at index from the countryArray, call its toString() method and save the result, print it out with System.out.println and as an argument to outputLabel.setText( text to print out ); */
+  //Precondition: Review button must be clicked
+  //Postcondition: It shows the information about the current country to the user to review by calling the toStrng method.
   public void reviewButtonClick()
   {
-     
+    String review = countryArray[index].toString();
+    System.out.println(review);
+    outputLabel.setText(review);
+
   }
 
-  /* quizButton should clear the outputLabel (outputLabel.setText to empty string), get the country at index from countryArray, print out a question about it like What country is this? and/or What's this country's capital?. Get the user's answer using scan.nextLine() and check if it is equal to the country's data using its get methods and print out correct or incorrect.
-  */
+  //Precondition: Quiz button must be clicked.
+  //Postcondition: pairs the correct answer type to the question being asked and cheaks to see if the user got it right.
   public void quizButtonClick()
   {
-    Scanner scan = new Scanner(System.in); 
     
-    
+    if ( rand == 0 ){
+      if (input.getText().contentEquals(countryArray[index].getName())) {
+      outputLabel.setText("Correct!");
+      }
+      else {
+      outputLabel.setText("NO!");
+      }
+    }
+    if ( rand == 1 ){
+      if (input.getText().contentEquals(countryArray[index].getCapital())) {
+      outputLabel.setText("Correct!");
+      }
+      else {
+      outputLabel.setText("NO!");
+      }
+    }
+    if ( rand == 2 ){
+      if (input.getText().contentEquals(countryArray[index].getlanguage())) {
+      outputLabel.setText("Correct!");
+      }
+      else {
+      outputLabel.setText("NO!");
+      }
+    }
     
   }
 
@@ -108,6 +162,11 @@ public Main() {
         outputLabel = new JLabel();
         jFrame.add(imageLabel);
         jFrame.add(outputLabel);
+
+        input = new JTextField(20);
+        jFrame.add(input);
+
+
         jFrame.setVisible(true);
         // add event listener for button click
         reviewButton.addActionListener(new ActionListener() {
